@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from utils import homogenous_transform
+
 
 class Line:
 
@@ -33,26 +35,13 @@ class Line:
 
         return cls(points, handle)
     
-    def transform(self,
-        translation_vec: np.ndarray,
-        rotate_theta: float
+    def transform_to(self,
+        target_handle: np.ndarray
     ) -> None:
 
-        T_mat = np.array([
-            [np.cos(rotate_theta), -np.sin(rotate_theta), translation_vec[0]],
-            [np.sin(rotate_theta), np.cos(rotate_theta), translation_vec[1]],
-            [0, 0, 1],
-        ])
+        
 
-        result_array = []
-        for pt in self.waypoints:
-            query_pt = np.append(pt, 1).reshape((3, 1))
-            transfered_pt = np.matmul(T_mat, query_pt)
-            transfered_pt = transfered_pt.reshape((3,))
-            result_array.append(transfered_pt[0:2])
-        result_array = np.array(result_array)
-
-        self.waypoints = result_array
+        pass
     
 if __name__ == '__main__':
 

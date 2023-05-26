@@ -38,18 +38,18 @@ class LaneLinesCreator:
 
         # homogenous transform
         # TODO: check rotation & translation
-        transfered_array = origin_pt
-        transfered_array = homogenous_transform(origin_pt, -np.pi/2, np.array([0, radius]))
-        # transfered_array[:,1] = -transfered_array[:,1]
-        transfered_array = homogenous_transform(transfered_array, start_heading, np.array(start_point))
+        # transfered_array = origin_pt
+        # transfered_array = homogenous_transform(origin_pt, np.array([0, radius]), -np.pi/2)
+        # # transfered_array[:,1] = -transfered_array[:,1]
+        # transfered_array = homogenous_transform(transfered_array, np.array(start_point), start_heading)
 
-        # translation_vec = np.array([-start_point[1], -radius + start_point[0]])
-        # print(f'translation_vec: {translation_vec}')
-        # theta = np.pi/2 + start_heading
-        # transfered_array = homogenous_transform(origin_pt, theta, translation_vec)
+        translation_vec = np.array(start_point) - np.array([radius, 0])
+        print(f'translation_vec: {translation_vec}')
+        theta = np.pi/2 + start_heading
+        transfered_array = homogenous_transform(origin_pt, translation_vec, theta)
 
-        plt.xlim(-100, 100)
-        plt.ylim(-100, 100)
+        # plt.xlim(-100, 100)
+        # plt.ylim(-100, 100)
         plt.scatter(transfered_array[:,0], transfered_array[:,1])
         plt.show()
 
@@ -62,4 +62,4 @@ if __name__ == '__main__':
         length_range = (0, 100, 0.5),
         kappa_range = (0, 2, 0.1)
     )
-    lane_line_creator.create_arc([20, 30], np.pi*1/6, 100, 0.0, 0.5)
+    lane_line_creator.create_arc([20, 30], np.pi*1/6, 100, 0.01, 0.5)

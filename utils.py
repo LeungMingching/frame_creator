@@ -3,8 +3,8 @@ import numpy as np
 
 def homogenous_transform(
     query_array: np.ndarray,
-    theta: float,
-    translation_vec: np.ndarray
+    translation_vec: np.ndarray,
+    rotational_theta: float,
 ) -> np.ndarray:
     
     is_single_pt = (len(query_array.shape) == 1)
@@ -12,8 +12,8 @@ def homogenous_transform(
         query_array = np.expand_dims(query_array, axis=0)
 
     T_mat = np.array([
-        [np.cos(theta), -np.sin(theta), translation_vec[0]],
-        [np.sin(theta), np.cos(theta), translation_vec[1]],
+        [np.cos(rotational_theta), -np.sin(rotational_theta), translation_vec[0]],
+        [np.sin(rotational_theta), np.cos(rotational_theta), translation_vec[1]],
         [0, 0, 1],
     ])
 
