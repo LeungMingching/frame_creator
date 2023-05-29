@@ -29,3 +29,48 @@ def homogenous_transform(
         return result_array[0]
     else:
         return result_array
+
+def rotate_2d(
+    query_array: np.ndarray,
+    theta: float,
+) -> np.ndarray:
+
+    is_single_pt = (len(query_array.shape) == 1)
+    if is_single_pt:
+        query_array = np.expand_dims(query_array, axis=0)
+    
+    rotation_matrix = np.array([
+        [np.cos(theta), -np.sin(theta)],
+        [np.sin(theta), np.cos(theta)]
+    ])
+
+    result_array = []
+    for pt in query_array:
+        transfered_pt = np.matmul(rotation_matrix, pt)
+        result_array.append(transfered_pt)
+    result_array = np.array(result_array)
+    
+    if is_single_pt:
+        return result_array[0]
+    else:
+        return result_array
+
+def translate_2d(
+    query_array: np.ndarray,
+    vector: float,
+) -> np.ndarray:
+
+    is_single_pt = (len(query_array.shape) == 1)
+    if is_single_pt:
+        query_array = np.expand_dims(query_array, axis=0)
+
+    result_array = []
+    for pt in query_array:
+        transfered_pt = vector + pt
+        result_array.append(transfered_pt)
+    result_array = np.array(result_array)
+    
+    if is_single_pt:
+        return result_array[0]
+    else:
+        return result_array
