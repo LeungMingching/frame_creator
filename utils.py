@@ -74,3 +74,15 @@ def translate_2d(
         return result_array[0]
     else:
         return result_array
+    
+def get_sub_idxs(
+    capacity: list,
+    idx: int
+) -> list:
+    idx_ls = []
+    for cap in reversed(capacity):
+        result = np.divmod(idx, cap)
+        idx_ls.append(result[1])
+        idx = result[0]
+    idx_ls.reverse()
+    return idx_ls
