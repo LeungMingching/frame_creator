@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from line import Line
 
 
@@ -36,6 +35,8 @@ class LineLayer:
 
 
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    
     num_line = 3
     ll = LineLayer(
         num_line=num_line,

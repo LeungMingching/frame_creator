@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
 from utils import *
 
 
@@ -70,6 +68,7 @@ class Line:
         return heading
     
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
 
     l = Line.arc(length=100,
         kappa=-0.01,
