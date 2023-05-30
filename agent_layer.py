@@ -1,4 +1,5 @@
 import numpy as np
+from agent import Agent
 
 
 class AgentLayer:
@@ -7,7 +8,7 @@ class AgentLayer:
         distribution_mask: np.ndarray
     ) -> None:
         assert len(distribution_mask.shape) == 2
-        
+
         self.distribution_mask = distribution_mask
 
     def update_frenet_grid_range(self,
@@ -28,6 +29,9 @@ class AgentLayer:
 
 if __name__ == '__main__':
     distribution_mask = np.zeros((5, 5))
+    distribution_mask[3][0] = 2 # ego car
+    distribution_mask[4][1] = 1 # left ahead agent
+    distribution_mask[2][2] = 1 # right ahead agent
     al = AgentLayer(
         distribution_mask=distribution_mask
     )

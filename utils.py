@@ -86,3 +86,41 @@ def get_sub_idxs(
         idx = result[0]
     idx_ls.reverse()
     return idx_ls
+
+def find_nearest_2d(
+    point_list: np.ndarray,
+    query_point: np.ndarray
+) -> tuple:
+    distance = [np.linalg.norm(point - query_point) for point in point_list]
+    distance = np.array(distance)
+    idx = distance.argmin()
+    return idx, distance[idx]
+
+def frenet_to_cartesian(
+    reference_line: np.ndarray, # in cartesian
+    headings_vec: np.ndarray, # in cartesian
+    s_vec: np.ndarray, # in frenet
+    query_pose_array: np.ndarray, # in frenet
+) -> np.ndarray:
+    
+    reference_line_sl = np.zeros_like(reference_line)
+    reference_line_sl[:,0] = s_vec
+    
+    converted_pose_array = []
+    for query_pose in query_pose_array:
+        s = query_pose[0]
+        l = query_pose[1]
+        heading_sl = query_pose[2]
+
+        idx, _ = find_nearest_2d(reference_line_sl, np.array([s, l]))
+        x_r = reference_line[idx][0]
+        y_r = reference_line[idx][1]
+        heading_r = headings_vec[idx]
+
+        x = x_r - l * np.sin(heading_r)
+        y = y_r + l * np.cos(heading_r)
+        heading = heading_r + heading_sl
+
+        converted_pose_array.append([x, y, heading])
+    converted_pose_array = np.array(converted_pose_array)
+    return converted_pose_array
