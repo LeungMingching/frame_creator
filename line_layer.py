@@ -24,9 +24,9 @@ class LineLayer:
         
         # frenet_range = (s_min. s_max, l_min, l_max)
         self.frenet_range = (0, max(length_list), 0, lane_width * (num_line - 1))
-        self.waypoints_ls = []
-        self.s_vec_ls = []
-        self.heading_ls = []
+        self.waypoints_array = []
+        self.s_vec_array = []
+        self.heading_array = []
         for idx in range(num_line):
             line = Line.arc(
                 length=length_list[idx],
@@ -34,12 +34,15 @@ class LineLayer:
                 step=step
             )
 
-            handle = np.array([0, lane_width*idx, 0])
+            handle = np.array([0, lane_width*idx, np.pi/2])
             line.transform_to(handle)
 
-            self.waypoints_ls.append(line.waypoints)
-            self.s_vec_ls.append(line.s_vec)
-            self.heading_ls.append(line.heading_vec)
+            self.waypoints_array.append(line.waypoints)
+            self.s_vec_array.append(line.s_vec)
+            self.heading_array.append(line.heading_vec)
+        self.waypoints_array = np.array(self.waypoints_array)
+        self.s_vec_array = np.array(self.s_vec_array)
+        self.heading_array = np.array(self.heading_array)
 
 
 if __name__ == '__main__':

@@ -32,7 +32,11 @@ class Line:
             points.append([radius * np.cos(i), radius * np.sin(i)])
         points = np.array(points)
 
-        handle = np.array([radius, 0.0, sign*np.pi/2])
+        handle = np.array([
+            radius * np.cos(angular_range/2),
+            radius * np.sin(angular_range/2),
+            angular_range/2 + sign * np.pi
+        ])
 
         return cls(points, handle)
     
