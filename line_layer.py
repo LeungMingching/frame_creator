@@ -3,7 +3,15 @@ from line import Line
 
 
 class LineLayer:
-    def __init__(self,
+    
+    def __init__(self) -> None:
+
+        self.frenet_range = None
+        self.waypoints_ls = None
+        self.s_vec_ls = None
+        self.heading_ls = None
+    
+    def create_lines(self,
         num_line: int,
         lane_width:float,
         length_list: np.ndarray,
@@ -38,11 +46,14 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     
     num_line = 3
-    ll = LineLayer(
+    ll = LineLayer()
+    ll.create_lines(
         num_line=num_line,
         lane_width=3,
-        length_list=100 * np.ones((num_line,)),
-        kappa_list=-0.001 * np.ones((num_line,)),
+        # length_list=100 * np.ones((num_line,)),
+        length_list=[50, 200, 100],
+        # kappa_list=-0.001 * np.ones((num_line,)),
+        kappa_list=[-0.001, 0.0, 0.005],
         step=0.5
     )
 
