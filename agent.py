@@ -91,29 +91,41 @@ class Agent:
         headings_xy: np.ndarray,
         s_vec: np.ndarray
     ) -> None:
-        heading_sl = np.expand_dims(self.heading_sl, axis=1)
-        pose_sl = np.concatenate((self.path_sl, heading_sl), axis=1)
+        num_pose = len(self.path_sl)
         
-        # path & heading
-        pose = frenet_to_cartesian(
-            reference_line_xy,
-            headings_xy,
-            s_vec,
-            pose_sl
-        )
-        self.path = pose[:, 0:2]
-        self.heading = pose[:, 2]
+        reference_line_sl = np.zeros_like(reference_line_xy)
+        reference_line_sl[:,0] = s_vec
+        
+        self.path = []
+        self.heading = []
+        self.velocity = []
+        self.acceleration = []
+        for i_pose in range(num_pose):
+            s = self.path_sl[i_pose][0]
+            l = self.path_sl[i_pose][1]
+            heading_sl = self.heading_sl[i_pose]
 
-        # velocity & acceleration
-        velocity = []
-        acceleration = []
-        for idx in range(len(self.velocity_sl)):
-            v = rotate_2d(self.velocity_sl[idx], headings_xy[idx])
-            a = rotate_2d(self.acceleration_sl[idx], headings_xy[idx])
-            velocity.append(v)
-            acceleration.append(a)
-        self.velocity = np.array(velocity)
-        self.acceleration = np.array(acceleration)
+            idx, _ = find_nearest_2d(reference_line_sl, np.array([s, l]))
+            x_r = reference_line_xy[idx][0]
+            y_r = reference_line_xy[idx][1]
+            heading_r = headings_xy[idx]
+
+            x = x_r - l * np.sin(heading_r)
+            y = y_r + l * np.cos(heading_r)
+            heading = heading_r + heading_sl
+
+            v = rotate_2d(self.velocity_sl[i_pose], heading_r)
+            a = rotate_2d(self.acceleration_sl[i_pose], heading_r)
+
+            self.path.append([x, y])
+            self.heading.append(heading)
+            self.velocity.append(v)
+            self.acceleration.append(a)
+        
+        self.path = np.array(self.path)
+        self.heading = np.array(self.heading)
+        self.velocity = np.array(self.velocity)
+        self.acceleration = np.array(self.acceleration)
 
 
 if __name__ == '__main__':
