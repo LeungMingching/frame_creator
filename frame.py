@@ -26,7 +26,6 @@ class Frame:
             self.reference_line_layer.s_vec_array[0]
         )
 
-        print(self.reference_line_layer.frenet_range)
         agents_loc_sl = self.agent_layer.get_frenet_location_from_mask(
             agent_layer_config['distribution_mask'],
             self.reference_line_layer.frenet_range
@@ -45,10 +44,6 @@ class Frame:
         agent_location_array = self.agent_layer.agent_location_array
         agent_heading_array = self.agent_layer.agent_heading_array
         agent_velocity_array = self.agent_layer.agent_velocity_array
-
-        print(agent_location_array)
-        print(agent_heading_array)
-        print(agent_velocity_array)
 
         # reference lines
         for waypts in waypoints_array:

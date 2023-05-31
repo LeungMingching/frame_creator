@@ -80,6 +80,7 @@ class AgentLayer:
                 velocity_array[agent_id],
                 acceleration_array[agent_id]
             )
+            # FIXME: pass in the cloest reference line
             if self.is_base_reference_line_set:
                 agent.update_cartesian(
                     self.reference_line_xy, self.headings_xy, self.s_vec
