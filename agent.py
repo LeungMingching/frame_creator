@@ -30,10 +30,27 @@ class Agent:
         self.acceleration = None
 
     @classmethod
+    def init_agent(cls,
+        init_pose_sl: np.ndarray,
+        init_velocity_sl: float,
+        init_acceleration_sl: np.ndarray,
+        t_step: float = 0.1,
+        t_horizon: float = 3,
+        dimention: tuple = (3, 2, 2)
+    ): # no trajectory supported
+        path = np.array([init_pose_sl[0:2]])
+        heading = np.array([init_pose_sl[2]])
+        velocity = np.array([init_velocity_sl * np.cos(heading), init_velocity_sl * np.sin(heading)]).reshape((1,2))
+        acceleration = np.array([init_acceleration_sl])
+
+        return cls(path, heading, velocity, acceleration, t_step, t_horizon, dimention)
+        
+    
+    @classmethod
     def aligned_uniformly_accelerate_agent(cls,
         init_pose_sl: np.ndarray,
         init_velocity_sl: float,
-        init_acceleration_sl: float,
+        init_acceleration_sl: np.ndarray,
         t_step: float = 0.1,
         t_horizon: float = 3,
         dimention: tuple = (3, 2, 2)
@@ -41,16 +58,16 @@ class Agent:
         num_frame = int(t_horizon / t_step + 1)
         s0, l0 = init_pose_sl[0], init_pose_sl[1]
         v0 = init_velocity_sl
-        a0 = init_acceleration_sl
+        a0 = np.linalg.norm(init_acceleration_sl)
 
         t_array = np.linspace(0, t_horizon, num_frame)
         a_array = [a0]
         v_array = [v0]
         s_array = [s0]
         for t in t_array[1:]:
-            a = a_array[-1]
-            v = v_array[-1] + a * t
-            s = s_array[-1] + 0.5 * a * t**2
+            a = a0
+            v = v0 + a * t
+            s = s0 + v0 * t + 0.5 * a * t**2
 
             a_array.append(a)
             v_array.append(v)
@@ -90,9 +107,9 @@ class Agent:
         # velocity & acceleration
         velocity = []
         acceleration = []
-        for idx in range(len(self.heading)):
-            v = rotate_2d(self.velocity_sl[idx], self.heading[idx])
-            a = rotate_2d(self.acceleration_sl[idx], self.heading[idx])
+        for idx in range(len(self.velocity_sl)):
+            v = rotate_2d(self.velocity_sl[idx], headings_xy[idx])
+            a = rotate_2d(self.acceleration_sl[idx], headings_xy[idx])
             velocity.append(v)
             acceleration.append(a)
         self.velocity = np.array(velocity)
@@ -101,17 +118,18 @@ class Agent:
 
 if __name__ == '__main__':
     a = Agent.aligned_uniformly_accelerate_agent(
-        init_pose_sl=[3, 3, -1*np.pi /4],
-        init_velocity_sl=5,
-        init_acceleration_sl=1
+        init_pose_sl=[3, -10, 5*np.pi /6],
+        init_velocity_sl=10,
+        init_acceleration_sl=[200.0, 0.0]
     )
 
     ref_line = np.zeros((101, 2))
     ref_line[:,0] = np.linspace(0, 100, 101)
-    ref_line[:,1] = -np.linspace(0, 100, 101)
+    ref_line[:,1] = np.linspace(0, 100, 101)
     # ref_line[:,1] = np.zeros((101,))
-    headings_r = -1*np.pi /4 * np.ones((101,))
+    headings_r = 1*np.pi /4 * np.ones((101,))
     s_vec = np.array([i*np.sqrt(2) for i in range(101)])
+    # s_vec = np.array([i for i in range(101)])
 
     print(f'position_sl: {a.path_sl[0]}')
     print(f'heading_sl: {a.heading_sl[0]}')
