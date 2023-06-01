@@ -21,7 +21,7 @@ class Line:
         step: float
     ):
         kappa = 1e-12 if kappa == 0.0 else kappa
-        sign = np.sign(kappa)
+        sign = 1 if kappa >= 0 else 0
 
         radius = np.abs(1 / kappa)
         num_pt = int(np.ceil(length / step))
@@ -31,6 +31,9 @@ class Line:
         for i in idxs:
             points.append([radius * np.cos(i), radius * np.sin(i)])
         points = np.array(points)
+
+        # # unequal lane width
+        # handle = np.array([radius, 0.0, sign*np.pi/2])
 
         handle = np.array([
             radius * np.cos(angular_range/2),
