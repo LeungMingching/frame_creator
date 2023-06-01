@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from line_layer import LineLayer
 from agent_layer import AgentLayer
 from agent import Agent
+from navi_layer import NaviLayer
 
 
 class Frame:
@@ -12,6 +13,7 @@ class Frame:
 
         self.reference_line_layer = LineLayer()
         self.agent_layer = AgentLayer()
+        self.navi_layer = NaviLayer()
 
     def create_frame(self, 
         config: dict
@@ -20,6 +22,7 @@ class Frame:
         agent_layer_config = config['agent_layer']
 
         self.reference_line_layer.create_lines(**line_layer_config)
+
         self.agent_layer.set_base_reference_line(
             self.reference_line_layer.waypoints_array[0],
             self.reference_line_layer.heading_array[0],
@@ -39,10 +42,11 @@ class Frame:
             other_type=Agent.aligned_uniformly_accelerate_agent
         )
 
+        self.navi_layer.create_navi()
+
     def draw(self) -> None:
         waypoints_array = self.reference_line_layer.waypoints_array
         agent_location_array = self.agent_layer.agent_location_array
-        agent_heading_array = self.agent_layer.agent_heading_array
         agent_velocity_array = self.agent_layer.agent_velocity_array
 
         # reference lines
