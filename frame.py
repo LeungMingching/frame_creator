@@ -78,18 +78,18 @@ if __name__ == '__main__':
             'num_line': 5,
             'lane_width': 10,
             'length_list': np.ones((5,)) * 200,
-            'kappa_list': np.ones((5,)) * 0.008,
+            'kappa_list': np.ones((5,)) * 0.002,
             'step': 0.5
         },
         'agent_layer': {
             'distribution_mask': np.array([
-                [0, 1, 0, 0, 1,],
-                [0, 0, 0, 0, 0,],
-                [1, 0, 2, 0, 0,],
-                [0, 1, 0, 0, 1,],
-                [0, 0, 0, 0, 0 ]
+                [0, 0, 0, 0, 1, 0],
+                [0, 0, 1, 0, 0, 0],
+                [1, 2, 0, 0, 0, 0],
+                [0, 1, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0]
             ]),
-            'heading_array': np.ones((6,)) * np.pi * 1/6, # (n,)
+            'heading_array': np.ones((6,)) * np.pi * 0, # (n,)
             'velocity_array': np.ones((6,)) * 6.0, # (n,)
             'acceleration_array': np.ones((6, 2)) * 0.0 # (n, 2)
         }

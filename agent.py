@@ -36,7 +36,7 @@ class Agent:
         init_acceleration_sl: np.ndarray,
         t_step: float = 0.1,
         t_horizon: float = 3,
-        dimention: tuple = (3, 2, 2)
+        dimention: tuple = (1.81, 1.35, 4.39)
     ): # no trajectory supported
         path = np.array([init_pose_sl[0:2]])
         heading = np.array([init_pose_sl[2]])

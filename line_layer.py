@@ -6,10 +6,11 @@ class LineLayer:
     
     def __init__(self) -> None:
 
+        self.num_line = None
         self.frenet_range = None
-        self.waypoints_ls = None
-        self.s_vec_ls = None
-        self.heading_ls = None
+        self.waypoints_array = None
+        self.s_vec_array = None
+        self.heading_array = None
     
     def create_lines(self,
         num_line: int,
@@ -21,6 +22,7 @@ class LineLayer:
     
         assert len(length_list) == num_line
         assert len(kappa_list) == num_line
+        self.num_line = num_line
         
         # frenet_range = (s_min. s_max, l_min, l_max)
         self.frenet_range = (0, max(length_list), 0, lane_width * (num_line - 1))
@@ -62,6 +64,6 @@ if __name__ == '__main__':
 
     print(ll.frenet_range)
 
-    for l in ll.waypoints_ls:
+    for l in ll.waypoints_array:
         plt.scatter(l[:,0], l[:,1], c='g')
     plt.show()
