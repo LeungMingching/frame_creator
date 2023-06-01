@@ -1,3 +1,5 @@
+import os
+import json
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -70,6 +72,75 @@ class Frame:
         plt.ylim(min_limit, max_limit)
         plt.show()
 
+    def export_to_json(self, save_dir):
+        timestamp = np.random.rand() * 1e3
+
+        navi = {
+            'command': self.navi_layer.navi_command,
+            'execute_distance': self.navi_layer.execute_distance
+        }
+
+        ego_status = {
+            'position': self.agent_layer.agent_location_array[0].tolist(),
+            'heading': self.agent_layer.agent_heading_array[0],
+            'velocity': self.agent_layer.agent_velocity_array[0].tolist(),
+            'acceleration': self.agent_layer.agent_acceleration_array[0].tolist()
+        }
+
+        agent_ls = []
+        for i in range(1, self.agent_layer.num_agent):
+            agent = {
+                'pose': {
+                    'BEV': {
+                        'position': None,
+                        'heading': None,
+                        'velocity': None,
+                        'acceleration': None
+                    },
+                    'UTM': {
+                        'position': self.agent_layer.agent_location_array[i].tolist(),
+                        'heading': self.agent_layer.agent_heading_array[i],
+                        'velocity': self.agent_layer.agent_velocity_array[i].tolist(),
+                        'acceleration': self.agent_layer.agent_acceleration_array[i].tolist()
+                    }
+                },
+                'is_movable': True,
+                'dimension': {
+                    "width": 1.81,
+                    "height": 1.35,
+                    "length": 4.39
+                },
+                'future_poses': []
+            }
+            agent_ls.append(agent)
+
+        ref_line_ls = []
+        for i in range(1, self.reference_line_layer.num_line):
+            ref_line = {
+                'lane_attribute': 1111, 
+                'passable_type': 1111,
+                'waypoint': {
+                    'UTM': self.reference_line_layer.waypoints_array[i].tolist(),
+                    'BEV': None
+                }
+            }
+            ref_line_ls.append(ref_line)
+
+        frame = {
+            'timestamp': timestamp,
+            'navi': navi,
+            'ego_status': ego_status,
+            'agents': agent_ls,
+            'reference_lines': ref_line_ls,
+            'lane_lines': []
+        }
+
+        # save
+        file_name = os.path.join(save_dir, f'{int(timestamp)}_frame.json')
+        with open(file_name, 'w', encoding='utf-8') as f:
+            json.dump(frame, f, ensure_ascii=False, indent=4)
+        print(f'json file saved at {file_name}')
+
 
 if __name__ == '__main__':
 
@@ -98,3 +169,4 @@ if __name__ == '__main__':
     frame = Frame()
     frame.create_frame(config)
     frame.draw()
+    frame.export_to_json('./data')
