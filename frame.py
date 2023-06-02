@@ -51,25 +51,23 @@ class Frame:
         agent_location_array = self.agent_layer.agent_location_array
         agent_velocity_array = self.agent_layer.agent_velocity_array
 
+        ax = plt.subplot(1, 1, 1)
         # reference lines
         for waypts in waypoints_array:
             x = waypts[:,0]
             y = waypts[:,1]
-            plt.plot(x, y, color='g')
+            ax.plot(x, y, color='g')
         
         # agents
         for idx in range(len(agent_location_array)):
             marker_color = 'r' if idx == 0 else 'b'
-            plt.quiver(
+            ax.quiver(
                 *agent_location_array[idx],
                 *agent_velocity_array[idx],
                 color=marker_color
             )
         
-        max_limit = max(waypoints_array.flatten()) + 30
-        min_limit = min(waypoints_array.flatten()) - 30
-        plt.xlim(min_limit, max_limit)
-        plt.ylim(min_limit, max_limit)
+        ax.set_aspect('equal', 'datalim')
         plt.show()
 
     def export_to_json(self, save_dir):
@@ -115,7 +113,7 @@ class Frame:
             agent_ls.append(agent)
 
         ref_line_ls = []
-        for i in range(1, self.reference_line_layer.num_line):
+        for i in range(0, self.reference_line_layer.num_line):
             ref_line = {
                 'lane_attribute': 1111, 
                 'passable_type': 1111,

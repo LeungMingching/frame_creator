@@ -36,16 +36,15 @@ class LineLayer:
                 step=step
             )
 
-            # handle = np.array([0, lane_width*idx, 0])
-            handle = np.array([0, lane_width*idx, np.pi/2])
+            handle = np.array([0, lane_width*idx, 0])
             line.transform_to(handle)
 
             self.waypoints_array.append(line.waypoints)
             self.s_vec_array.append(line.s_vec)
             self.heading_array.append(line.heading_vec)
-        self.waypoints_array = np.array(self.waypoints_array)
-        self.s_vec_array = np.array(self.s_vec_array)
-        self.heading_array = np.array(self.heading_array)
+        self.waypoints_array = np.array(self.waypoints_array, dtype=object)
+        self.s_vec_array = np.array(self.s_vec_array, dtype=object)
+        self.heading_array = np.array(self.heading_array, dtype=object)
 
 
 if __name__ == '__main__':
