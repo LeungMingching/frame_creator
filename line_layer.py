@@ -15,6 +15,26 @@ class LineLayer:
     def create_lines(self,
         num_line: int,
         lane_width:float,
+        outer_length: float,
+        outer_radius: float,
+        step: float = 0.5
+    ) -> None:
+        outer_length = 200
+        radius_sign = 1 if outer_radius >= 0 else -1
+
+        length_list = np.array([
+            outer_length * (1 - i * lane_width / abs(outer_radius)) for i in range(num_line)
+        ])[::radius_sign]
+
+        kappa_list = radius_sign * np.array([
+            1/(abs(outer_radius) - lane_width*i) for i in range(num_line)
+        ])[::radius_sign]
+
+        self.create_specific_lines(num_line, lane_width, length_list, kappa_list, step)
+    
+    def create_specific_lines(self,
+        num_line: int,
+        lane_width: float,
         length_list: np.ndarray,
         kappa_list: np.ndarray,
         step: float = 0.5

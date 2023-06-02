@@ -145,18 +145,18 @@ if __name__ == '__main__':
     config = {
         'line_layer': {
             'num_line': 5,
-            'lane_width': 10,
-            'length_list': np.ones((5,)) * 200,
-            'kappa_list': np.ones((5,)) * 0.002,
+            'lane_width': 5,
+            'outer_length': 200,
+            'outer_radius': -200,
             'step': 0.5
         },
         'agent_layer': {
             'distribution_mask': np.array([
-                [0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 1],
                 [0, 0, 1, 0, 0, 0],
                 [1, 2, 0, 0, 0, 0],
-                [0, 1, 0, 0, 1, 0],
-                [0, 0, 0, 0, 0, 0]
+                [0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 1]
             ]),
             'heading_array': np.ones((6,)) * np.pi * 0, # (n,)
             'velocity_array': np.ones((6,)) * 6.0, # (n,)
