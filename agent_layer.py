@@ -48,12 +48,12 @@ class AgentLayer:
         agent_loc_sl = np.column_stack((s_agent,l_agent))
 
         # ego
-        l_idx_ego, s_idx_ego = np.where(distribution_mask == 2)
+        l_idx_ego, s_idx_ego = np.where(distribution_mask > 1)
         s_ego = s_grid[s_idx_ego]
         l_ego = l_grid[l_idx_ego]
-        ego_loc_sl = np.squeeze(np.column_stack((s_ego, l_ego)), axis=0)
+        ego_loc_sl = np.column_stack((s_ego, l_ego))
 
-        all_agent_loc_sl = np.insert(agent_loc_sl, 0, ego_loc_sl, axis=0)
+        all_agent_loc_sl = np.concatenate((ego_loc_sl, agent_loc_sl), axis=0)
         return all_agent_loc_sl
     
     def create_agents(self,
@@ -65,6 +65,10 @@ class AgentLayer:
         other_type=Agent.aligned_uniformly_accelerate_agent
     ):
         self.num_agent = len(location_array)
+
+        assert len(heading_array) == self.num_agent
+        assert len(velocity_array) == self.num_agent
+        assert len(acceleration_array) == self.num_agent
 
         self.agent_location_array = []
         self.agent_heading_array = []

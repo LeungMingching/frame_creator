@@ -7,9 +7,9 @@ class NaviLayer:
         self.navi_command = None
         self.execute_distance = None
 
-    def create_navi(self):
-        self.navi_command = np.random.randint(0, 5)
-        self.execute_distance = np.random.rand() * 300
+    def create_navi(self, navi_command, execute_distance):
+        self.navi_command = navi_command
+        self.execute_distance = execute_distance
 
 
 if __name__ == '__main__':

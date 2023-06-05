@@ -19,15 +19,16 @@ class LineLayer:
         outer_radius: float,
         step: float = 0.5
     ) -> None:
-        outer_length = 200
+        EPS = 1e-9
+        
         radius_sign = 1 if outer_radius >= 0 else -1
 
         length_list = np.array([
-            outer_length * (1 - i * lane_width / abs(outer_radius)) for i in range(num_line)
+            outer_length * (1 - i * lane_width / (abs(outer_radius) + EPS)) for i in range(num_line)
         ])[::radius_sign]
 
         kappa_list = radius_sign * np.array([
-            1/(abs(outer_radius) - lane_width*i) for i in range(num_line)
+            1/((abs(outer_radius) - lane_width*i + EPS)) for i in range(num_line)
         ])[::radius_sign]
 
         self.create_specific_lines(num_line, lane_width, length_list, kappa_list, step)
@@ -45,7 +46,7 @@ class LineLayer:
         self.num_line = num_line
         
         # frenet_range = (s_min. s_max, l_min, l_max)
-        self.frenet_range = (0, max(length_list), 0, lane_width * (num_line - 1))
+        self.frenet_range = (0, max(length_list), -0.5*lane_width, lane_width * (num_line - 0.5 ))
         self.waypoints_array = []
         self.s_vec_array = []
         self.heading_array = []

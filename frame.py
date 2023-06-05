@@ -1,5 +1,7 @@
 import os
+import time
 import json
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -22,6 +24,7 @@ class Frame:
     ):
         line_layer_config = config['line_layer']
         agent_layer_config = config['agent_layer']
+        navi_layer_config = config['navi_layer']
 
         self.reference_line_layer.create_lines(**line_layer_config)
 
@@ -44,7 +47,10 @@ class Frame:
             other_type=Agent.aligned_uniformly_accelerate_agent
         )
 
-        self.navi_layer.create_navi()
+        self.navi_layer.create_navi(
+            navi_command=navi_layer_config['command'],
+            execute_distance=navi_layer_config['execute_distance'],
+        )
 
     def draw(self) -> None:
         waypoints_array = self.reference_line_layer.waypoints_array
@@ -70,20 +76,24 @@ class Frame:
         ax.set_aspect('equal', 'datalim')
         plt.show()
 
-    def export_to_json(self, save_dir):
-        timestamp = np.random.rand() * 1e3
+    def get_frame_dict(self):
+        timestamp = np.round(time.time()*1e3)*1e3
 
         navi = {
             'command': self.navi_layer.navi_command,
             'execute_distance': self.navi_layer.execute_distance
         }
 
-        ego_status = {
-            'position': self.agent_layer.agent_location_array[0].tolist(),
-            'heading': self.agent_layer.agent_heading_array[0],
-            'velocity': self.agent_layer.agent_velocity_array[0].tolist(),
-            'acceleration': self.agent_layer.agent_acceleration_array[0].tolist()
-        }
+        try:
+            ego_status = {
+                'position': self.agent_layer.agent_location_array[0].tolist(),
+                'heading': self.agent_layer.agent_heading_array[0],
+                'velocity': self.agent_layer.agent_velocity_array[0].tolist(),
+                'acceleration': self.agent_layer.agent_acceleration_array[0].tolist()
+            }
+        except:
+            print('No ego status found!')
+            ego_status = None
 
         agent_ls = []
         for i in range(1, self.agent_layer.num_agent):
@@ -133,16 +143,16 @@ class Frame:
             'lane_lines': []
         }
 
-        # save
-        file_name = os.path.join(save_dir, f'{int(timestamp)}_frame.json')
-        with open(file_name, 'w', encoding='utf-8') as f:
-            json.dump(frame, f, ensure_ascii=False, indent=4)
-        print(f'json file saved at {file_name}')
+        return copy.deepcopy(frame)
 
 
 if __name__ == '__main__':
 
     config = {
+        'navi_layer': {
+            'command': np.random.randint(0, 4),
+            'execute_distance': np.random.rand() * 300
+        },
         'line_layer': {
             'num_line': 5,
             'lane_width': 5,
@@ -167,4 +177,11 @@ if __name__ == '__main__':
     frame = Frame()
     frame.create_frame(config)
     frame.draw()
-    frame.export_to_json('./data')
+    frame_dict = frame.get_frame_dict()
+
+    # save
+    timestamp = frame_dict['timestamp']
+    file_name = os.path.join('./data', f'{timestamp}_frame.json')
+    with open(file_name, 'w', encoding='utf-8') as f:
+        json.dump(frame_dict, f, ensure_ascii=False, indent=4)
+    print(f'json file saved at {file_name}')
