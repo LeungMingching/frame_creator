@@ -152,7 +152,7 @@ def export_frame_to_json(save_dir, frame_per_file, meta_collection):
 #     max_num_ref_line=5,
 #     outer_length_range=(150, 250, 5), # (min, max, num)
 #     outer_kappa_range=(-0.0025, 0.0025, 8), # (min, max, num)
-#     ego_heading_range=(-80/180 * np.pi, -80/180 * np.pi, 5), # (min, max, num)
+#     ego_heading_range=(-80/180 * np.pi, 80/180 * np.pi, 5), # (min, max, num)
 #     ego_velocity_range=(0, 20, 5), # (min, max, num)
 #     ego_acceleration_range=(0, 0, 0), # (min, max, num)
 # )
@@ -163,7 +163,7 @@ meta_collection = generate_random_meta(
     max_num_ref_line=5,
     outer_length_range=(150, 250), # (min, max)
     outer_kappa_range=(-0.0025, 0.0025), # (min, max)
-    ego_heading_range=(-80/180 * np.pi, -80/180 * np.pi), # (min, max)
+    ego_heading_range=(-80/180 * np.pi, 80/180 * np.pi), # (min, max)
     ego_velocity_range=(0, 20), # (min, max)
     ego_acceleration_range=(0, 0), # (min, max)
 )

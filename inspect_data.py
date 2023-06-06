@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-with open('data/1686018790214000_frames.json') as f:
+with open('data/1686019665658000_frames.json') as f:
     frame_collection = json.load(f)
 
 plt.ion()
@@ -40,5 +40,5 @@ for frame in tqdm(frame_collection):
     ax.set_aspect('equal', 'datalim')
     fig.canvas.draw()
     fig.canvas.flush_events()
-    # time.sleep(0.01)
+    time.sleep(0.1)
 plt.ioff()
