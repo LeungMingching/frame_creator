@@ -1,17 +1,18 @@
 import json
 import time
+from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-with open('data/rand.json') as f:
+with open('data/1686014823314000_frames.json') as f:
     frame_collection = json.load(f)
 
 plt.ion()
 fig, ax = plt.subplots(1, 1)
 
 # for batch_idx, data in enumerate(dataloader):
-for frame in frame_collection:
+for frame in tqdm(frame_collection):
     ax.cla()
     # reference lines
     for ref_line in frame['reference_lines']:

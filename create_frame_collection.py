@@ -24,9 +24,7 @@ ego_acceleration = np.zeros((1,2))
 # objects
 
 
-frame = Frame()
-
-def generate_squential_collection(
+def generate_squential_meta(
     navi_cmd_size: int,
     max_num_ref_line: int,
     outer_length_range: tuple, # (min, max, num)
@@ -35,7 +33,7 @@ def generate_squential_collection(
     ego_velocity_range: tuple, # (min, max, num)
     ego_acceleration_range: tuple, # (min, max, num)
 ):
-    frame_collection = []
+    meta_collection = []
     
     navi_cmd_grid = np.linspace(0, navi_cmd_size-1, navi_cmd_size)
 
@@ -47,9 +45,9 @@ def generate_squential_collection(
     ego_velocity_grid = np.linspace(ego_velocity_range[0], ego_velocity_range[1], num=ego_velocity_range[2])
     ego_acceleration_grid = np.linspace(ego_acceleration_range[0], ego_acceleration_range[1], num=ego_acceleration_range[2])
     
-    for navi_cmd in tqdm(navi_cmd_grid, desc='navi_cmd'):
+    for navi_cmd in navi_cmd_grid:
 
-        for num_ref_line in tqdm(num_ref_line_grid, desc='num_ref_line'):
+        for num_ref_line in num_ref_line_grid:
             for outer_length in outer_length_grid:
                 for outer_radius in outer_radius_grid:
 
@@ -87,16 +85,33 @@ def generate_squential_collection(
                                         'acceleration_array': ego_acceleration_array # (n, 2)
                                     }
                                 }
+                                meta_collection.append(config)
 
-                                frame.create_frame(config)
-                                # frame.draw()
-                                frame_dict = frame.get_frame_dict()
-                                frame_collection.append(frame_dict)
+    return meta_collection
 
-    return frame_collection
+def export_frame_to_json(save_dir, frame_per_file, meta_collection):
+    frame = Frame()
+    frame_collection = []
+    print(f'Total number of frame: {len(meta_collection)}')
+    for idx, config in tqdm(enumerate(meta_collection), desc='Frames: '):
+        frame.create_frame(config)
+        # frame.draw()
+        frame_dict = frame.get_frame_dict()
+        frame_collection.append(frame_dict)
+
+        if (idx+1) % frame_per_file == 0:
+            start_timestamp = frame_collection[0]['timestamp']
+            file_name = f'{int(start_timestamp)}_frames.json'
+            with open(os.path.join(save_dir, file_name), 'w', encoding='utf-8') as f:
+                json.dump(frame_collection, f, ensure_ascii=False, indent=4)
+            print(f'json file saved at {file_name}')
+
+            frame_collection = []
+    
 
 
-frame_collection = generate_squential_collection(
+
+meta_collection = generate_squential_meta(
     navi_cmd_size=4,
     max_num_ref_line=5,
     outer_length_range=(150, 250, 5), # (min, max, num)
@@ -106,9 +121,5 @@ frame_collection = generate_squential_collection(
     ego_acceleration_range=(0, 0, 0), # (min, max, num)
 )
 
-# save
 save_dir = './data'
-file_name = os.path.join('./data', 'rand.json')
-with open(file_name, 'w', encoding='utf-8') as f:
-    json.dump(frame_collection, f, ensure_ascii=False, indent=4)
-print(f'json file saved at {file_name}')
+export_frame_to_json(save_dir, 500, meta_collection)
