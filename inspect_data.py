@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-with open('data/1686014823314000_frames.json') as f:
+with open('data/1686018790214000_frames.json') as f:
     frame_collection = json.load(f)
 
 plt.ion()
