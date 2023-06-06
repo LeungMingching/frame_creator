@@ -76,29 +76,42 @@ def generate_random_meta(
     max_num_ref_line: int,
     outer_length_range: tuple, # (min, max)
     outer_kappa_range: tuple, # (min, max)
-    ego_heading_range: tuple, # (min, max)
-    ego_velocity_range: tuple, # (min, max)
-    ego_acceleration_range: tuple, # (min, max)
+    distribution_density_range: tuple, # (min, max)
+    heading_range: tuple, # (min, max)
+    velocity_range: tuple, # (min, max) w.r.t. ego
+    acceleration_range: tuple # (min, max)
 ):
     meta_collection = []
     
     for _ in range(num_frame):
     
+        # navi
         navi_cmd = np.random.choice(np.arange(navi_cmd_size))
+
+        # reference line
         num_ref_line = np.random.choice(np.arange(1, max_num_ref_line + 1))
         outer_length = np.random.rand() * (outer_length_range[1] - outer_length_range[0]) + outer_length_range[0]
         outer_kappa = np.random.rand() * (outer_kappa_range[1] - outer_kappa_range[0]) + outer_kappa_range[0]
         outer_radius = 1 / (outer_kappa + 1e-9)
 
+        # distribution
         l_dim = int(2*num_ref_line + 1)
         s_dim = int(np.floor(outer_length/4.0) + 1)
+        p_threshold = np.random.rand() * (distribution_density_range[1] - distribution_density_range[0]) + distribution_density_range[0]
+        
+        distribution_mask = np.random.rand(l_dim, s_dim)
+        distribution_mask = (distribution_mask < p_threshold).astype(float)
         ego_l_idx = np.random.choice(np.arange(l_dim))
-        distribution_mask = np.zeros((l_dim, s_dim))
         distribution_mask[ego_l_idx][0] = 2
 
-        ego_heading = np.random.rand() * (ego_heading_range[1] - ego_heading_range[0]) + ego_heading_range[0]
-        ego_velocity = np.random.rand() * (ego_velocity_range[1] - ego_velocity_range[0]) + ego_velocity_range[0]
-        ego_acceleration_array = np.zeros((1,2))
+        num_all_agent = (distribution_mask > 0).sum()
+
+        # agents
+        mu = (heading_range[1] + heading_range[0]) / 2.0
+        simga = (heading_range[1] - heading_range[0]) / 6.0
+        heading_array = np.random.randn(num_all_agent,) * simga + mu
+        velocity_array = np.random.rand(num_all_agent,) * (velocity_range[1] - velocity_range[0]) + velocity_range[0]
+        acceleration_array = np.zeros((num_all_agent,2))
         
         config = {
             'navi_layer': {
@@ -114,9 +127,9 @@ def generate_random_meta(
             },
             'agent_layer': {
                 'distribution_mask': distribution_mask,
-                'heading_array': np.array([ego_heading]), # (n,)
-                'velocity_array': np.array([ego_velocity]), # (n,)
-                'acceleration_array': ego_acceleration_array # (n, 2)
+                'heading_array': heading_array, # (n,)
+                'velocity_array': velocity_array, # (n,)
+                'acceleration_array': acceleration_array # (n, 2)
             }
         }
         meta_collection.append(config)
@@ -129,7 +142,7 @@ def export_frame_to_json(save_dir, frame_per_file, meta_collection):
     frame = Frame()
     frame_collection = []
     print(f'Total number of frame: {len(meta_collection)}')
-    for idx, config in tqdm(enumerate(meta_collection), desc='Frames: '):
+    for idx, config in enumerate(tqdm(meta_collection, desc='Frames: ')):
         frame.create_frame(config)
         # frame.draw()
         frame_dict = frame.get_frame_dict()
@@ -158,14 +171,15 @@ def export_frame_to_json(save_dir, frame_per_file, meta_collection):
 # )
 
 meta_collection = generate_random_meta(
-    num_frame=600,
+    num_frame=1003,
     navi_cmd_size=4,
     max_num_ref_line=5,
     outer_length_range=(150, 250), # (min, max)
     outer_kappa_range=(-0.0025, 0.0025), # (min, max)
-    ego_heading_range=(-80/180 * np.pi, 80/180 * np.pi), # (min, max)
-    ego_velocity_range=(0, 20), # (min, max)
-    ego_acceleration_range=(0, 0), # (min, max)
+    distribution_density_range=(0.0, 0.02), # (min, max)
+    heading_range=(-80/180 * np.pi, 80/180 * np.pi), # (min, max)
+    velocity_range=(0, 20), # (min, max)
+    acceleration_range=(0, 0) # (min, max)
 )
 
 save_dir = './data'
