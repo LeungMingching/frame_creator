@@ -85,10 +85,11 @@ class Frame:
         }
 
         try:
+            velocity = np.linalg.norm(self.agent_layer.agent_velocity_array[0])
             ego_status = {
                 'position': self.agent_layer.agent_location_array[0].tolist(),
                 'heading': self.agent_layer.agent_heading_array[0],
-                'velocity': self.agent_layer.agent_velocity_array[0].tolist(),
+                'velocity': [velocity.item(), 0],
                 'acceleration': self.agent_layer.agent_acceleration_array[0].tolist()
             }
         except:
