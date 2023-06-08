@@ -64,7 +64,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('file_name', type=str, help='The name of the file to be visualized.')
-    parser.add_argument('--file_root', type=str, default='data', help='Diectory that stores the data file.')
+    parser.add_argument('--file_root', type=str, default='data', help='Directory that stores the data files.')
     parser.add_argument('--coordinate_sys', type=str, default='UTM', help='UTM or BEV')
     args = parser.parse_args()
 
