@@ -77,7 +77,7 @@ class Frame:
         plt.show()
 
     def get_frame_dict(self):
-        timestamp = np.round(time.time()*1e3)*1e3
+        timestamp = np.mod(np.round(time.time()*1e3), 1e9) *1e3
 
         navi = {
             'command': self.navi_layer.navi_command,
