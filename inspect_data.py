@@ -68,8 +68,15 @@ if __name__ == '__main__':
     parser.add_argument('--coordinate_sys', type=str, default='UTM', help='UTM or BEV')
     args = parser.parse_args()
 
+    # viz(
+    #     args.file_root,
+    #     args.file_name, 
+    #     args.coordinate_sys
+    # )
+
     viz(
-        args.file_root,
-        args.file_name, 
-        args.coordinate_sys
+        file_root='data/0704',
+        file='435808888000_frames.json',
+        coordinate_sys='UTM'
     )
+

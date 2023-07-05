@@ -81,16 +81,16 @@ class Frame:
 
         navi = {
             'command': self.navi_layer.navi_command,
-            'execute_distance': self.navi_layer.execute_distance
+            'execute_distance': np.round(self.navi_layer.execute_distance, decimals=4).item()
         }
 
         try:
-            velocity = np.linalg.norm(self.agent_layer.agent_velocity_array[0])
+            velocity = np.round(np.linalg.norm(self.agent_layer.agent_velocity_array[0]), decimals=4)
             ego_status = {
-                'position': self.agent_layer.agent_location_array[0].tolist(),
-                'heading': self.agent_layer.agent_heading_array[0],
+                'position': np.round(self.agent_layer.agent_location_array[0], decimals=4).tolist(),
+                'heading': np.round(self.agent_layer.agent_heading_array[0], decimals=4).item(),
                 'velocity': [velocity.item(), 0],
-                'acceleration': self.agent_layer.agent_acceleration_array[0].tolist()
+                'acceleration': np.round(self.agent_layer.agent_acceleration_array[0], decimals=4).tolist()
             }
         except:
             print('No ego status found!')
@@ -107,10 +107,10 @@ class Frame:
                         'acceleration': None
                     },
                     'UTM': {
-                        'position': self.agent_layer.agent_location_array[i].tolist(),
-                        'heading': self.agent_layer.agent_heading_array[i],
-                        'velocity': self.agent_layer.agent_velocity_array[i].tolist(),
-                        'acceleration': self.agent_layer.agent_acceleration_array[i].tolist()
+                        'position': np.round(self.agent_layer.agent_location_array[i], decimals=4).tolist(),
+                        'heading': np.round(self.agent_layer.agent_heading_array[i], decimals=4).item(),
+                        'velocity': np.round(self.agent_layer.agent_velocity_array[i], decimals=4).tolist(),
+                        'acceleration': np.round(self.agent_layer.agent_acceleration_array[i], decimals=4).tolist()
                     }
                 },
                 'is_movable': True,
@@ -129,7 +129,7 @@ class Frame:
                 'lane_attribute': 1111, 
                 'passable_type': 1111,
                 'waypoint': {
-                    'UTM': self.reference_line_layer.waypoints_array[i].tolist(),
+                    'UTM': np.round(np.array(self.reference_line_layer.waypoints_array[i].tolist()), decimals=4).tolist(),
                     'BEV': None
                 }
             }

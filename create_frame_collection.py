@@ -171,16 +171,16 @@ def export_frame_to_json(save_dir, frame_per_file, meta_collection):
 # )
 
 meta_collection = generate_random_meta(
-    num_frame=1003,
+    num_frame=10003,
     navi_cmd_size=4,
     max_num_ref_line=5,
-    outer_length_range=(150, 250), # (min, max)
+    outer_length_range=(700, 900), # (min, max)
     outer_kappa_range=(-0.0025, 0.0025), # (min, max)
-    distribution_density_range=(0.0, 0.02), # (min, max)
+    distribution_density_range=(0.0, 0.015), # (min, max)
     heading_range=(-80/180 * np.pi, 80/180 * np.pi), # (min, max)
     velocity_range=(0, 20), # (min, max)
     acceleration_range=(0, 0) # (min, max)
 )
 
-save_dir = './data'
+save_dir = './data/0704'
 export_frame_to_json(save_dir, 500, meta_collection)

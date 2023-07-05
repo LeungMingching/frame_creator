@@ -46,7 +46,7 @@ class LineLayer:
         self.num_line = num_line
         
         # frenet_range = (s_min. s_max, l_min, l_max)
-        self.frenet_range = (0, max(length_list), -0.5*lane_width, lane_width * (num_line - 0.5 ))
+        self.frenet_range = (0, 0.1 * max(length_list), -0.5*lane_width, lane_width * (num_line - 0.5 ))
         self.waypoints_array = []
         self.s_vec_array = []
         self.heading_array = []
