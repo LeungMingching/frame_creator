@@ -51,6 +51,7 @@ class AgentLayer:
         l_idx_ego, s_idx_ego = np.where(distribution_mask > 1)
         s_ego = s_grid[s_idx_ego]
         l_ego = l_grid[l_idx_ego]
+        s_ego = 0 # TODO: optimize ego location
         ego_loc_sl = np.column_stack((s_ego, l_ego))
 
         all_agent_loc_sl = np.concatenate((ego_loc_sl, agent_loc_sl), axis=0)

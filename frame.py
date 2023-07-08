@@ -34,9 +34,12 @@ class Frame:
             self.reference_line_layer.s_vec_array[0]
         )
 
+        agent_frenet_range = self._clip_frenet_range(
+            config['agent_layer']['agent_frenet_range'],
+            self.reference_line_layer.frenet_range)
         agents_loc_sl = self.agent_layer.get_frenet_location_from_mask(
             agent_layer_config['distribution_mask'],
-            self.reference_line_layer.frenet_range
+            agent_frenet_range
         )
         self.agent_layer.create_agents(
             location_array = agents_loc_sl,
@@ -145,6 +148,14 @@ class Frame:
         }
 
         return copy.deepcopy(frame)
+    
+    def  _clip_frenet_range(self, agent_range, reference_line_range):
+        s_agent_range = agent_range[0:2]
+        l_agent_range = agent_range[2:4]
+        cliped_s_range = np.clip(s_agent_range, *reference_line_range[0:2])
+        cliped_l_range = np.clip(l_agent_range, *reference_line_range[2:4])
+        cliped_range = np.concatenate((cliped_s_range, cliped_l_range))
+        return cliped_range
 
 
 if __name__ == '__main__':
@@ -162,6 +173,7 @@ if __name__ == '__main__':
             'step': 0.5
         },
         'agent_layer': {
+            'agent_frenet_range': np.array([50, 100, 2, 4]),
             'distribution_mask': np.array([
                 [0, 0, 0, 0, 0, 1],
                 [0, 0, 1, 0, 0, 0],

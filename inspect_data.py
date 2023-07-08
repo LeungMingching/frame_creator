@@ -44,6 +44,7 @@ def viz(file_root, file, coordinate_sys='UTM'):
         ego_velocity = np.array(frame['ego_status']['velocity'])
 
         ax.text(*ego_position, f'({ego_velocity[0].item():.2f}, {ego_velocity[1].item():.2f})')
+        ax.scatter(*ego_position, marker='^', color='r')
         ax.quiver(*ego_position, np.cos(ego_heading), np.sin(ego_heading), color='r')
 
         # agents
@@ -53,6 +54,7 @@ def viz(file_root, file, coordinate_sys='UTM'):
             velocity = np.array(ag['pose'][coordinate_sys]['velocity'])
 
             ax.text(*position, f'({velocity[0].item():.2f}, {velocity[1].item():.2f})')
+            ax.scatter(*position, marker='^', color='b')
             ax.quiver(*position, *velocity, color='b')
         
         fig.canvas.draw()

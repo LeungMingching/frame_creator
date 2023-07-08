@@ -76,9 +76,10 @@ def generate_random_meta(
     max_num_ref_line: int,
     outer_length_range: tuple, # (min, max)
     outer_kappa_range: tuple, # (min, max)
+    agent_frenet_range: tuple, # (s_min, s_max, l_min, l_max)
     distribution_density_range: tuple, # (min, max)
     heading_range: tuple, # (min, max)
-    velocity_range: tuple, # (min, max) w.r.t. ego
+    velocity_range: tuple, # (min, max)
     acceleration_range: tuple # (min, max)
 ):
     meta_collection = []
@@ -95,8 +96,9 @@ def generate_random_meta(
         outer_radius = 1 / (outer_kappa + 1e-9)
 
         # distribution
-        l_dim = int(2*num_ref_line + 1)
-        s_dim = int(np.floor(outer_length/4.0) + 1)
+        l_dim = num_ref_line
+        s_length = agent_frenet_range[1] - agent_frenet_range[0]
+        s_dim = int(np.floor(s_length/5.0) + 1)
         p_threshold = np.random.rand() * (distribution_density_range[1] - distribution_density_range[0]) + distribution_density_range[0]
         
         distribution_mask = np.random.rand(l_dim, s_dim)
@@ -126,6 +128,7 @@ def generate_random_meta(
                 'step': 0.5
             },
             'agent_layer': {
+                'agent_frenet_range': agent_frenet_range,
                 'distribution_mask': distribution_mask,
                 'heading_array': heading_array, # (n,)
                 'velocity_array': velocity_array, # (n,)
@@ -138,6 +141,9 @@ def generate_random_meta(
 
 def export_frame_to_json(save_dir, frame_per_file, meta_collection):
     assert len(meta_collection) != 0
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
     
     frame = Frame()
     frame_collection = []
@@ -171,16 +177,17 @@ def export_frame_to_json(save_dir, frame_per_file, meta_collection):
 # )
 
 meta_collection = generate_random_meta(
-    num_frame=10003,
-    navi_cmd_size=4,
+    num_frame=5001,
+    navi_cmd_size=3,
     max_num_ref_line=5,
-    outer_length_range=(700, 900), # (min, max)
+    outer_length_range=(600, 600), # (min, max)
     outer_kappa_range=(-0.0025, 0.0025), # (min, max)
-    distribution_density_range=(0.0, 0.015), # (min, max)
-    heading_range=(-80/180 * np.pi, 80/180 * np.pi), # (min, max)
-    velocity_range=(0, 20), # (min, max)
+    agent_frenet_range=(30, 300, 0, 50), # (s_min, s_max, l_min, l_max)
+    distribution_density_range=(0.0, 0.0), # (min, max)
+    heading_range=(-60/180 * np.pi, 60/180 * np.pi), # (min, max)
+    velocity_range=(0, 0), # (min, max)
     acceleration_range=(0, 0) # (min, max)
 )
 
-save_dir = './data/0704'
+save_dir = './data/0708/no_ag'
 export_frame_to_json(save_dir, 500, meta_collection)
