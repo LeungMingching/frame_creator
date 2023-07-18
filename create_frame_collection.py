@@ -139,6 +139,78 @@ def generate_random_meta(
 
     return meta_collection
 
+def generate_sample_overtake_meta(
+    num_frame: int,
+    navi_cmd_size: int,
+    max_num_ref_line: int,
+    outer_length_range: tuple, # (min, max)
+    outer_kappa_range: tuple, # (min, max)
+    agent_frenet_range: tuple, # (s_min, s_max, l_min, l_max)
+    num_agent_range: tuple, # (min, max)
+    heading_range: tuple, # (min, max)
+    velocity_range: tuple, # (min, max)
+    acceleration_range: tuple # (min, max)
+):
+    meta_collection = []
+
+    for _ in range(num_frame):
+        # navi
+        navi_cmd = int(0)
+
+        # reference line
+        num_ref_line = np.random.choice(np.arange(1, max_num_ref_line + 1))
+        outer_length = np.random.rand() * (outer_length_range[1] - outer_length_range[0]) + outer_length_range[0]
+        outer_kappa = np.random.rand() * (outer_kappa_range[1] - outer_kappa_range[0]) + outer_kappa_range[0]
+        outer_radius = 1 / (outer_kappa + 1e-9)
+
+        # distribution
+        l_dim = num_ref_line
+        s_length = agent_frenet_range[1] - agent_frenet_range[0]
+        s_dim = int(np.floor(s_length/15.0) + 1)
+
+        distribution_mask = np.zeros((l_dim, s_dim))
+        l_idx = np.random.choice(np.arange(l_dim))
+        distribution_mask[l_idx][0] = 2
+
+        num_agent = np.random.randint(num_agent_range[0], num_agent_range[1])
+        ag_s_idxs = np.random.randint(1, s_dim, size=num_agent)
+        distribution_mask[l_idx][ag_s_idxs] = 1
+
+        num_all_agent = (distribution_mask > 0).sum()
+
+        mu = (heading_range[1] + heading_range[0]) / 2.0
+        simga = (heading_range[1] - heading_range[0]) / 6.0
+        heading_array = np.zeros((num_all_agent,))
+        heading_array[0] = np.random.randn() * simga + mu
+        velocity_array = np.zeros((num_all_agent,))
+        velocity_array[0] = np.random.rand() * (velocity_range[1] - velocity_range[0]) + velocity_range[0]
+        acceleration_array = np.zeros((num_all_agent,2))
+
+        config = {
+            'navi_layer': {
+                'command': int(navi_cmd),
+                'execute_distance': float(np.random.rand() * 300)
+            },
+            'line_layer': {
+                'num_line': int(num_ref_line),
+                'lane_width': 3.5,
+                'outer_length': float(outer_length),
+                'outer_radius': float(outer_radius),
+                'step': 0.5
+            },
+            'agent_layer': {
+                'agent_frenet_range': agent_frenet_range,
+                'distribution_mask': distribution_mask,
+                'heading_array': heading_array, # (n,)
+                'velocity_array': velocity_array, # (n,)
+                'acceleration_array': acceleration_array # (n, 2)
+            }
+        }
+        meta_collection.append(config)
+
+    return meta_collection
+
+
 def export_frame_to_json(save_dir, frame_per_file, meta_collection):
     assert len(meta_collection) != 0
 
@@ -162,8 +234,6 @@ def export_frame_to_json(save_dir, frame_per_file, meta_collection):
             print(f'json file saved at {file_name}')
 
             frame_collection = []
-    
-
 
 
 # meta_collection = generate_squential_meta(
@@ -176,18 +246,31 @@ def export_frame_to_json(save_dir, frame_per_file, meta_collection):
 #     ego_acceleration_range=(0, 0, 0), # (min, max, num)
 # )
 
-meta_collection = generate_random_meta(
+# meta_collection = generate_random_meta(
+#     num_frame=5001,
+#     navi_cmd_size=3,
+#     max_num_ref_line=5,
+#     outer_length_range=(600, 600), # (min, max)
+#     outer_kappa_range=(-0.0025, 0.0025), # (min, max)
+#     agent_frenet_range=(30, 300, 0, 50), # (s_min, s_max, l_min, l_max)
+#     distribution_density_range=(0.0, 0.0), # (min, max)
+#     heading_range=(-60/180 * np.pi, 60/180 * np.pi), # (min, max)
+#     velocity_range=(0, 0), # (min, max)
+#     acceleration_range=(0, 0) # (min, max)
+# )
+
+meta_collection = generate_sample_overtake_meta(
     num_frame=5001,
     navi_cmd_size=3,
     max_num_ref_line=5,
     outer_length_range=(600, 600), # (min, max)
     outer_kappa_range=(-0.0025, 0.0025), # (min, max)
     agent_frenet_range=(30, 300, 0, 50), # (s_min, s_max, l_min, l_max)
-    distribution_density_range=(0.0, 0.0), # (min, max)
+    num_agent_range=(0, 3), # (min, max)
     heading_range=(-60/180 * np.pi, 60/180 * np.pi), # (min, max)
-    velocity_range=(0, 0), # (min, max)
+    velocity_range=(0, 20), # (min, max)
     acceleration_range=(0, 0) # (min, max)
 )
 
-save_dir = './data/0708/no_ag'
+save_dir = './data/0718/lk_ag'
 export_frame_to_json(save_dir, 500, meta_collection)
